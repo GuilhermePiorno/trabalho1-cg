@@ -37,6 +37,81 @@
     }
 
 
+    class Line{
+        constructor (p0,p1,c){
+            this.p0 = p0;
+            this.p1 = p1;
+            this.color = c;
+        }  
+    }    
+
+
+    class Ellipse extends Shape2d{
+        constructor(cx,cy,axisw,axish,color,numSubdiv){
+            super(color);
+            this.cx = cx;
+            this.cy = cy;
+            this.width = axisw;
+            this.height = axish;
+            this.numSubdiv = numSubdiv;
+        }
+
+        evaluate(ang){
+            var x,y;
+            x = this.height*Math.cos(ang)+this.cx;
+            y = this.width*Math.sin(ang)+this.cy;
+            return [x,y];
+        }
+
+        discreticize(numSubdiv,coords,indices,colors){
+            var delta = 2*Math.PI/numSubdiv;
+            var i;
+            for (i=0;i<numSubdiv;i++){
+                var p = this.evaluate(i*delta);
+                coords[3*i] = p[0];
+                coords[3*i+1] = p[1];
+                coords[3*i+2] = 0.0;
+
+                colors[3*i] = this.color.r;
+                colors[3*i+1] = this.color.g;
+                colors[3*i+2] = this.color.b;
+
+                indices[i] = i;
+            }
+        }
+
+        discreticizeFilled(numSubdiv,coords,indices,colors){
+            var delta = 2*Math.PI/numSubdiv;
+            var i,j;
+
+            coords[0] = 0.0+this.cx;
+            coords[1] = 0.0+this.cy;
+            coords[2] = 0.0;
+            
+            colors[0] = this.color.r;
+            colors[1] = this.color.g;
+            colors[2] = this.color.b;
+            
+            for (i=0,j=3;i<numSubdiv;){
+                var p = this.evaluate(i*delta);
+                coords[j] = p[0];
+                coords[j+1] = p[1];
+                coords[j+2] = 0.0;
+
+                colors[j] = this.color.r;
+                colors[j+1] = this.color.g;
+                colors[j+2] = this.color.b;
+
+                indices[3*i] = 0;
+                indices[3*i+1] = (i+2)>numSubdiv?1:(i+2);
+                indices[3*i+2] = i+1;
+                i++;
+                j+=3
+
+            }
+        }
+    }
+
     class Circle extends Shape2d{
         constructor(cx,cy,radius,color,numSubdiv){
             super(color);

@@ -56,6 +56,38 @@ class WebGLPointList extends PointList{
     }
 }
 
+class WebGLLine extends Line{
+    constructor (gl,program,p0,p1,c,interpolation){
+        super(p0,p1,c);
+        this.gl = gl;
+        this.program = program;
+        this.interpolation = interpolation;
+    }
+
+    getWebGLModel(attribShaderVariables = null,uniformShaderVariables = null){
+        var coords = [this.p0.x,this.p0.y,0,
+                      this.p1.x,this.p1.y,0];
+        
+        var indices = [0,1]; 
+        var colors;
+
+        if (this.interpolation == true)
+        {
+            colors = [this.p0.color.r,this.p0.color.g,this.p0.color.b,
+                      this.p1.color.r,this.p1.color.g,this.p1.color.b];
+        }
+        else{
+            colors = [this.color.r,this.color.g,this.color.b,
+                      this.color.r,this.color.g,this.color.b];
+        }    
+        
+        const webGLLineModel = new WebGLModel(this.gl,this.program,2,this.gl.LINES,coords,indices,colors,null,null,null);
+        webGLLineModel.set(attribShaderVariables,uniformShaderVariables);
+        
+        return webGLLineModel;
+    }
+}
+
 class WebGLRectangle extends Rectangle{
     constructor (gl,program,p0,p1,p2color,p3color,c,interpolation){
         super(p0,p1,p2color,p3color,c);
@@ -93,10 +125,10 @@ class WebGLRectangle extends Rectangle{
                       primitiveType = this.gl.LINE_LOOP;
         }    
 
-        const webGLRectangle = new WebGLModel(this.gl,this.program,2,primitiveType,coords,indices,colors,null,null,null);
-        webGLRectangle.set(attribShaderVariables,uniformShaderVariables);
+        const webGLRectangleModel = new WebGLModel(this.gl,this.program,2,primitiveType,coords,indices,colors,null,null,null);
+        webGLRectangleModel.set(attribShaderVariables,uniformShaderVariables);
 
-        return webGLRectangle;
+        return webGLRectangleModel;
     }
 }
 
@@ -239,6 +271,39 @@ class WebGLPolygon extends Polygon{
     }
 }
 
+
+class WebGLEllipse extends Ellipse{
+    constructor (gl,program,cx,cy,axisw,axish,color,numSubdiv,filled,interpolation){
+        super(cx,cy,axisw,axish,color,numSubdiv);
+        this.gl = gl;
+        this.program = program;
+        this.interpolation = interpolation;
+        this.filled = filled;
+    
+    }
+
+    getWebGLModel(attribShaderVariables = null,uniformShaderVariables = null){
+        
+        var coords = [];
+        var indices = [];
+        var colors = [];
+        var primitiveType;
+
+        if (this.filled == true){
+            this.discreticizeFilled(this.numSubdiv,coords,indices,colors);
+            primitiveType = this.gl.TRIANGLES;
+        }
+        else{
+            this.discreticize(this.numSubdiv,coords,indices,colors);
+            primitiveType = this.gl.LINE_LOOP;
+        }
+ 
+        const webGLEllipseModel = new WebGLModel(this.gl,this.program,2,primitiveType,coords,indices,colors,null,null,null);
+        webGLEllipseModel.set(attribShaderVariables,uniformShaderVariables);
+
+        return webGLEllipseModel;
+    }
+}
 
 class WebGLCircle extends Circle{
     constructor (gl,program,cx,cy,radius,color,numSubdiv,filled,interpolation){
