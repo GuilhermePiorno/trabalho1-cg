@@ -26,10 +26,12 @@
     in vec3 aVertexColor;
     uniform float uVertexPointSize;
     uniform mat4 uModelViewMatrix;
+    uniform float uTime;
     smooth out vec4 vColor;
 
     void main(void) {
-      vec4 pos = vec4(aVertexPosition,1.0);
+      // (Trabalho-Item-6)
+      vec4 pos = vec4(aVertexPosition.x+(uTime), aVertexPosition.y, aVertexPosition.z,1.0);
 
       gl_PointSize = uVertexPointSize;
       gl_Position = uModelViewMatrix*pos;
@@ -57,11 +59,13 @@
           super();
           this.program = null;
           this.model = null;
-
+          this.d = new Date();
+          this.previous = new Date().getTime();
+          this.tic = 0;
       }
 
       create(){
-        
+        // console.log(this.previous);
         // Cria um program
         this.program = this.createProgram("vertex-shader","fragment-shader");
         
@@ -75,7 +79,7 @@
 
         //Define as variáveis attribute e uniform dos shaders
         this.attribShaderVariables = ["aVertexPosition","aVertexColor"];
-        this.uniformShaderVariables = ["uVertexPointSize","uModelViewMatrix"];
+        this.uniformShaderVariables = ["uVertexPointSize","uModelViewMatrix","uTime"];
 
         //Obtem a localização das variáveis no shader
         this.setProgramAttribShaderVariablesLocation(this.program,this.attribShaderVariables);
@@ -107,7 +111,7 @@
                                            0.3,c4,32,true,true); 
         this.ellipseModel = ellipse.getWebGLModel();
 
-        //Cria um retangulo e obtem um modelo WebGL (Trabalho-Item-4)
+        //Cria um retangulo e obtem um modelo WebGL (Trabalho-Item-4) translação
         const rectangle2 = new WebGLRectangle(this.gl, this.program, 
                                            new Point2d(0.0,0.0,c4),
                                            new Point2d(0.2,0.2,c0),
@@ -115,7 +119,7 @@
                                            c3,c0,true); 
         this.rectangleModel2 = rectangle2.getWebGLModel();
 
-        //Cria um retangulo e obtem um modelo WebGL (Trabalho-Item-4)
+        //Cria um retangulo e obtem um modelo WebGL (Trabalho-Item-4) Cisalhamento
         const rectangle3 = new WebGLRectangle(this.gl, this.program, 
                                            new Point2d(0.3,0.0,c1),
                                            new Point2d(0.6,-0.4,c1),
@@ -124,19 +128,27 @@
         this.rectangleModel3 = rectangle3.getWebGLModel();
 
 
-        // Cria um elipse e obtem um modelo WebGL (Trabalho-Item-4)
+        // Cria um elipse e obtem um modelo WebGL (Trabalho-Item-4) Rotação
         const ellipse2 = new WebGLEllipse (this.gl, this.program, 
                                            0.5,0.3, //centrada em coordenadas (0.5,0.3)
                                            0.2, 
                                            0.3,c5,32,true,true); 
         this.ellipseModel2 = ellipse2.getWebGLModel();
 
-        //Cria um triangulo e obtem um modelo WebGL
+        //Cria um triangulo e obtem um modelo WebGL (Trabalho-Item-4) Escala
         const triangle = new WebGLTriangle(this.gl, this.program, 
                                            new Point2d(0.0,0.5,c0),
                                            new Point2d(0.5,0.0,c1),
                                            new Point2d(-0.5,0.0,c2),c0,true); 
         this.triangleModel = triangle.getWebGLModel();
+
+
+        //Cria um triangulo e obtem um modelo WebGL (Trabalho-Item-5) Animação
+        const triangle2 = new WebGLTriangle(this.gl, this.program, 
+                                           new Point2d(-0.3,-0.2,c0),
+                                           new Point2d(-0.2,-0.4,c1),
+                                           new Point2d(-0.5,-0.4,c2),c1,false); 
+        this.triangleModel2 = triangle2.getWebGLModel();
 
         //Cria uma lista de pontos e obtem o modelo WebGL. É mais eficiente que instanciar um ponto por vez
         const pointList = new WebGLPointList(this.gl, this.program);
@@ -194,6 +206,11 @@
 
 
       draw() {
+        // (Trabalho-Item-6)
+        var new_d = new Date();
+        var time_stamp = new_d.getTime();
+        var tempo;
+        var elapsed_time = time_stamp-this.previous;
 
         const angle = (Math.PI)/18.0;
         const tx = 0.0;
@@ -230,39 +247,39 @@
                                          0.0,             0.0, 1.0, 0.0,
                                           tx,              ty, 0.0, 1.0];
 
+        //(Trabalho-Item-6)
+        if ((elapsed_time)>10){
+          tempo = ((time_stamp)%10000)/2500;
+          this.previous = time_stamp;
+          if (tempo <= Math.PI){
+            this.tic = Math.sin(tempo);
+          }
+          console.log(tempo+"->"+this.tic);
+        }
 
-        const uniformShaderVariablesValues = {"uVertexPointSize":["1f",16.0],"uModelViewMatrix":["mat4",false,identMatrix4]};
-        const uniformShaderVariablesValues2 = {"uVertexPointSize":["1f",16.0],"uModelViewMatrix":["mat4",false,modelViewMatrix]};
+        const uniformShaderVariablesValues = {"uVertexPointSize":["1f",16.0],"uModelViewMatrix":["mat4",false,identMatrix4],"uTime":["1f",0.0]};
+        const uniformShaderVariablesValues2 = {"uVertexPointSize":["1f",16.0],"uModelViewMatrix":["mat4",false,modelViewMatrix],"uTime":["1f",0.0]};
 
         // Scale
-        const uniformShaderVariablesValues3 = {"uVertexPointSize":["1f",16.0],"uModelViewMatrix":["mat4",false,scaleMatrix4]};
+        const uniformShaderVariablesValues3 = {"uVertexPointSize":["1f",16.0],"uModelViewMatrix":["mat4",false,scaleMatrix4],"uTime":["1f",0.0]};
         // Translate
-        const uniformShaderVariablesValues4 = {"uVertexPointSize":["1f",16.0],"uModelViewMatrix":["mat4",true,transMatrix4]};
+        const uniformShaderVariablesValues4 = {"uVertexPointSize":["1f",16.0],"uModelViewMatrix":["mat4",true,transMatrix4],"uTime":["1f",0.0]};
         // Shear
-        const uniformShaderVariablesValues5 = {"uVertexPointSize":["1f",16.0],"uModelViewMatrix":["mat4",true,shearMatrix4]};
+        const uniformShaderVariablesValues5 = {"uVertexPointSize":["1f",16.0],"uModelViewMatrix":["mat4",true,shearMatrix4],"uTime":["1f",0.0]};
         // Rotation
-        const uniformShaderVariablesValues6 = {"uVertexPointSize":["1f",16.0],"uModelViewMatrix":["mat4",true,rottransMatrix4]};
+        const uniformShaderVariablesValues6 = {"uVertexPointSize":["1f",16.0],"uModelViewMatrix":["mat4",true,rottransMatrix4],"uTime":["1f",0.0]};
+
+        // Animation (Trabalho-Item-6)
+        const uniformShaderVariablesValues7 = {"uVertexPointSize":["1f",16.0],"uModelViewMatrix":["mat4",false,identMatrix4],"uTime":["1f",this.tic]};
         this.setProgramUniformShaderVariablesValues(this.program,uniformShaderVariablesValues);
 
-        // this.pointModel.draw();
         this.rectangleModel.draw();     // Trabalho-Item-1
-        // this.triangleModel.draw();
         this.lineModel.draw();          // Trabalho-Item-2
-        // this.pointListModel.draw();
-        // this.triangleListModel.draw();
         this.ellipseModel.draw();       // Trabalho-Item-3
 
-        // this.setProgramUniformShaderVariablesValues(this.program,uniformShaderVariablesValues2);
         
         // (trabalho-Item-5)
         this.polygonModel.draw();
-        // this.circleModel.draw();
-        // this.bezierModel[0].draw();
-        // this.bezierModel[1].draw();
-        // this.bezierModel[2].draw();
-        // this.bsplineModel[0].draw();
-        // this.bsplineModel[1].draw();
-        // this.bsplineModel[2].draw();
 
         // Trabalho-Item-4
         // Mudança de escala de 100% para 10% (Trabalho-Item-4)
@@ -280,6 +297,10 @@
         // Rotação anti-horária em 10 graus e translação para direita de 0.2 de uma elipse. (Trabalho-Item-4)
         this.setProgramUniformShaderVariablesValues(this.program,uniformShaderVariablesValues6);
         this.ellipseModel2.draw();       // Trabalho-Item-3
+
+        this.setProgramUniformShaderVariablesValues(this.program,uniformShaderVariablesValues7);
+        this.triangleModel2.draw();
+
       } 
 
 
@@ -287,7 +308,6 @@
           this.gl.clearColor(0.7, 0.7, 0.9, 1.0);
           //this.gl.enable(this.gl.DEPTH_TEST);
           super.init();
-
       }
    
   }
