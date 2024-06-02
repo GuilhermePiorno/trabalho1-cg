@@ -36,7 +36,7 @@
         }
     }
 
-
+    // Trabalho-Item-2
     class Line{
         constructor (p0,p1,c){
             this.p0 = p0;
@@ -45,7 +45,7 @@
         }  
     }    
 
-
+    // Trabalho-Item-3
     class Ellipse extends Shape2d{
         constructor(cx,cy,axisw,axish,color,numSubdiv){
             super(color);
@@ -182,6 +182,7 @@
         }
     }
 
+    // Trabalho-Item-1
     class Rectangle{
         constructor (p0,p1,p2color,p3color,c){
             this.p0 = p0;

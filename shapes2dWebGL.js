@@ -56,6 +56,7 @@ class WebGLPointList extends PointList{
     }
 }
 
+// Trabalho-Item-2
 class WebGLLine extends Line{
     constructor (gl,program,p0,p1,c,interpolation){
         super(p0,p1,c);
@@ -88,6 +89,7 @@ class WebGLLine extends Line{
     }
 }
 
+// Trabalho-Item-1
 class WebGLRectangle extends Rectangle{
     constructor (gl,program,p0,p1,p2color,p3color,c,interpolation){
         super(p0,p1,p2color,p3color,c);
@@ -271,7 +273,7 @@ class WebGLPolygon extends Polygon{
     }
 }
 
-
+// Trabalho-Item-3
 class WebGLEllipse extends Ellipse{
     constructor (gl,program,cx,cy,axisw,axish,color,numSubdiv,filled,interpolation){
         super(cx,cy,axisw,axish,color,numSubdiv);
