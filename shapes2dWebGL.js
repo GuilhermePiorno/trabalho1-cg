@@ -170,10 +170,11 @@ class WebGLTriangle extends Triangle{
 }
 
 class WebGLTriangleList extends TriangleList{
-    constructor (gl,program){
+    constructor (gl,program,interpolation){
         super();
         this.gl = gl;
         this.program = program;
+        this.interpolation = interpolation;
     }
 
     getWebGLModel(attribShaderVariables = null,uniformShaderVariables = null){
@@ -197,7 +198,6 @@ class WebGLTriangleList extends TriangleList{
             indices.push(3*i);
             indices.push(3*i+1);
             indices.push(3*i+2);
-
             if (this.interpolation == true)
                 {
                     colors.push(t.p0.color.r);
@@ -209,7 +209,7 @@ class WebGLTriangleList extends TriangleList{
                     colors.push(t.p2.color.r);
                     colors.push(t.p2.color.g);
                     colors.push(t.p2.color.b);
-                        }
+                }
                 else{
                     colors.push(t.color.r);
                     colors.push(t.color.g);
@@ -232,12 +232,13 @@ class WebGLTriangleList extends TriangleList{
     }
 }
 
-
+// (Trabalho-Item-5)
 class WebGLPolygon extends Polygon{
-    constructor (gl,program,color,interpolation){
+    constructor (gl,program,color,filled,interpolation){
         super(color,interpolation);
         this.gl = gl;
         this.program = program;
+        this.filled = filled;
     }
 
     getWebGLModel(attribShaderVariables = null,uniformShaderVariables = null){
@@ -246,23 +247,32 @@ class WebGLPolygon extends Polygon{
         var indices = [];
         var colors = [];
         var i;
-        for (i=0;i<this.pointList.size;i++){
-            var p = this.pointList.list[i];
-            coords.push(p.x);
-            coords.push(p.y);
-            coords.push(0.0);
-            indices.push(i);
+        var earCollection;
+        
+        if (this.filled == false){
+          for (i=0;i<this.pointList.size;i++){
+              var p = this.pointList.list[i];
+              coords.push(p.x);
+              coords.push(p.y);
+              coords.push(0.0);
+              indices.push(i);
 
-            if (this.interpolation == true){
-                colors.push(this.color.r);
-                colors.push(this.color.g);
-                colors.push(this.color.b);
-            }
-            else{
-                colors.push(p.color.r);
-                colors.push(p.color.g);
-                colors.push(p.color.b);
-            }
+              if (this.interpolation == false){
+                  colors.push(this.color.r);
+                  colors.push(this.color.g); 
+                  colors.push(this.color.b);
+              }
+              else{
+                  colors.push(p.color.r);
+                  colors.push(p.color.g);
+                  colors.push(p.color.b);
+              }
+          }
+        }
+        else{
+          earCollection = new WebGLTriangleList(this.gl,this.program,this.interpolation);
+          this.vanGogh(this.color,this.interpolation,this.pointList,earCollection);
+          return earCollection.getWebGLModel();
         }
         
 
@@ -271,6 +281,64 @@ class WebGLPolygon extends Polygon{
 
         return webGLPolygonModel;
     }
+
+    vanGogh(color, interpolation, pointList, earCollection){
+
+      var i,j;
+      var clip;
+      var p0,p1,p2,p3;
+      if (pointList.size == 3){
+        earCollection.push(new Triangle(new Point2d(pointList.list[0].x,pointList.list[0].y,pointList.list[0].color),
+                                     new Point2d(pointList.list[1].x,pointList.list[1].y,pointList.list[1].color),
+                                     new Point2d(pointList.list[2].x,pointList.list[2].y,pointList.list[2].color),color,interpolation));
+        return; 
+      }
+      // clip ear
+      for (i=0;i<pointList.size;i++){
+        clip = true;
+        for (j=0;j<pointList.size;j++){
+          if (j!=i && j!=(i+1)%pointList.size && j!=(i+2)%pointList.size){
+            p0 = pointList.list[j];
+            p1 = pointList.list[i];
+            p2 = pointList.list[(i+1)%pointList.size];
+            p3 = pointList.list[(i+2)%pointList.size];
+            if (this.isInsideTriangle(p0,p1,p2,p3)){
+              clip = false;
+            }
+          }
+        }
+
+        if (clip){
+          pointList.list.splice((i+1)%pointList.size, 1);
+          earCollection.push(new Triangle(new Point2d(p1.x,p1.y,p1.color),
+                              new Point2d(p2.x,p2.y,p2.color),
+                              new Point2d(p3.x,p3.y,p3.color),color,interpolation));
+        }
+        this.vanGogh(color, interpolation, pointList, earCollection);
+        return;
+      }
+
+    }
+
+
+    sign(p1,p2,p3){
+      return (p1.x - p3.x)*(p2.y - p3.y) - (p2.x - p3.x)*(p1.y - p3.y);
+    }
+
+    isInsideTriangle(point,v1,v2,v3){
+      var d1, d2, d3;
+      var has_neg, has_pos;
+
+      d1 = this.sign(point, v1, v2);
+      d2 = this.sign(point, v2, v3);
+      d3 = this.sign(point, v3, v1);
+
+      has_neg = (d1<0) || (d2<0) || (d3<0);
+      has_pos = (d1>0) || (d2>0) || (d3>0);
+
+      return !(has_neg && has_pos);
+    }
+
 }
 
 // Trabalho-Item-3

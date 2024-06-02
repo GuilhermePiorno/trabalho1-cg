@@ -146,19 +146,20 @@
         this.pointListModel = pointList.getWebGLModel();
 
         //Cria uma lista de triangulos e obtem o modelo WebGL. É mais eficiente que definir um triangulo por vez
-        const triangleList = new WebGLTriangleList(this.gl,this.program);
+        const triangleList = new WebGLTriangleList(this.gl,this.program,true);
         triangleList.push(new Triangle(new Point2d(0.3,0.2,c0),new Point2d(0.1,-0.6,c1),new Point2d(0.5,-0.3,c2),c0,false));
         triangleList.push(new Triangle(new Point2d(-0.1,-0.2,c0),new Point2d(0.7,-0.4,c1),new Point2d(-0.2,-0.3,c2),c1,false));
         triangleList.push(new Triangle(new Point2d(0.5,0.7,c0),new Point2d(0.4,-0.2,c1),new Point2d(-0.5,0.3,c2),c2,false));
         this.triangleListModel = triangleList.getWebGLModel();
 
         //Cria um polígono. Não pode ser preenchido na implementação atual
-        const polygon = new WebGLPolygon(this.gl,this.program,c0,false);
+        // (trabalho-Item-5)
+        const polygon = new WebGLPolygon(this.gl,this.program,c3,true,true);
         polygon.push(new Point2d(0.0,0.5,c0));
-        polygon.push(new Point2d(0.8,0.0,c1));
-        polygon.push(new Point2d(0.6,-0.5,c0));
-        polygon.push(new Point2d(0.0,-0.5,c2));
-        polygon.push(new Point2d(-0.8,0.3,c0));
+        polygon.push(new Point2d(0.2,0.3,c1));
+        polygon.push(new Point2d(0.1,0.1,c0));
+        polygon.push(new Point2d(-0.1,0.1,c2));
+        polygon.push(new Point2d(-0.4,0.3,c0));
         this.polygonModel = polygon.getWebGLModel();
 
         //Cria um círculo
@@ -252,8 +253,9 @@
         this.ellipseModel.draw();       // Trabalho-Item-3
 
         // this.setProgramUniformShaderVariablesValues(this.program,uniformShaderVariablesValues2);
-
-        // this.polygonModel.draw();
+        
+        // (trabalho-Item-5)
+        this.polygonModel.draw();
         // this.circleModel.draw();
         // this.bezierModel[0].draw();
         // this.bezierModel[1].draw();
