@@ -23,7 +23,7 @@ shapes2dWebGL.js
 
 
 Todos os itens estão apresentados simultaneamente no mesmo canvas e enumerados na imagem abaixo.
-![image](https://github.com/GuilhermePiorno/trabalho1-cg/blob/main/Imagem.png)
+![Canvas.](/Imagem.png)
 
 1. Retângulo como pedido.
 2. Linha como pedido.
