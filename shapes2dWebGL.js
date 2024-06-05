@@ -284,9 +284,10 @@ class WebGLPolygon extends Polygon{
 
     vanGogh(color, interpolation, pointList, earCollection){
 
-      var i,j;
-      var clip;
-      var p0,p1,p2,p3;
+      var i,j;  // int
+      var clip; // bool
+      var clipping_index; // int
+      var p0,p1,p2,p3;  // Point2d
       if (pointList.size == 3){
         earCollection.push(new Triangle(new Point2d(pointList.list[0].x,pointList.list[0].y,pointList.list[0].color),
                                      new Point2d(pointList.list[1].x,pointList.list[1].y,pointList.list[1].color),
@@ -296,31 +297,39 @@ class WebGLPolygon extends Polygon{
       // clip ear
       for (i=0;i<pointList.size;i++){
         clip = true;
-        for (j=0;j<pointList.size;j++){
-          if (j!=i && j!=(i+1)%pointList.size && j!=(i+2)%pointList.size){
-            p0 = pointList.list[j];
-            p1 = pointList.list[i];
-            p2 = pointList.list[(i+1)%pointList.size];
-            p3 = pointList.list[(i+2)%pointList.size];
-            if (this.isInsideTriangle(p0,p1,p2,p3)){
-              clip = false;
+        p1 = pointList.list[i];
+        p2 = pointList.list[(i+1)%pointList.size];
+        clipping_index = (i+1)%pointList.size;  
+        p3 = pointList.list[(i+2)%pointList.size];
+        // console.log("vector: " + this.sign(p2,p3,p1))
+        if (this.sign(p2,p3,p1) > 0){
+          for (j=0;j<pointList.size;j++){
+            if (j!=i && j!=(i+1)%pointList.size && j!=(i+2)%pointList.size){
+              p0 = pointList.list[j];
+              if (this.isInsideTriangle(p0,p1,p2,p3)){
+                clip = false;
+              }
             }
           }
         }
+        else{
+          clip = false;
+        }
 
         if (clip){
-          pointList.list.splice((i+1)%pointList.size, 1);
+          // pointList.list.splice((i+1)%pointList.size, 1);
+          pointList.list.splice(clipping_index,1);
           earCollection.push(new Triangle(new Point2d(p1.x,p1.y,p1.color),
                               new Point2d(p2.x,p2.y,p2.color),
                               new Point2d(p3.x,p3.y,p3.color),color,interpolation));
-        }
         this.vanGogh(color, interpolation, pointList, earCollection);
-        return;
+        }
       }
+      return;
 
     }
 
-
+    // produto vetorial da multiplicação: do vetores p1 por p2, com origem em p3.
     sign(p1,p2,p3){
       return (p1.x - p3.x)*(p2.y - p3.y) - (p2.x - p3.x)*(p1.y - p3.y);
     }
@@ -338,6 +347,8 @@ class WebGLPolygon extends Polygon{
 
       return !(has_neg && has_pos);
     }
+
+    is
 
 }
 
