@@ -4,7 +4,7 @@ Guilherme Yukiyasu Hori Piorno
 2 de junho de 2024
 
 ## Entrega
-  O trabalho foi realizado em cima do exemplo do enunciado, o arquivo onde todos os itens são apresentados é `exampleWebGLApp.html`.
+  O trabalho foi realizado em cima do exemplo do enunciado, o arquivo onde todos os itens são apresentados é `trabalho.html`.
   
 Os itens podem ser localizados buscando pelos comentários referentes a cada item:
 1. Trabalho-Item-1
