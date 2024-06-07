@@ -16,7 +16,7 @@ Os itens podem ser localizados buscando pelos comentários referentes a cada ite
 
 Arquivos que foram alterados foram:
 ```
-exampleWebGLApp.html
+exampleWebGLApp.html -> renomeado para trabalho.html
 shapes2d.js
 shapes2dWebGL.js
 ```
