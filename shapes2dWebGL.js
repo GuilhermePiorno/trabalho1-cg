@@ -288,12 +288,24 @@ class WebGLPolygon extends Polygon{
       var clip; // bool
       var clipping_index; // int
       var p0,p1,p2,p3;  // Point2d
+
+
+      p1 = pointList.list[0];
+      p2 = pointList.list[1];
+      p3 = pointList.list[2];
+
       if (pointList.size == 3){
-        earCollection.push(new Triangle(new Point2d(pointList.list[0].x,pointList.list[0].y,pointList.list[0].color),
-                                     new Point2d(pointList.list[1].x,pointList.list[1].y,pointList.list[1].color),
-                                     new Point2d(pointList.list[2].x,pointList.list[2].y,pointList.list[2].color),color,interpolation));
-        return; 
+        if (this.sign(p2,p3,p1) > 0){
+          earCollection.push(new Triangle(new Point2d(pointList.list[0].x,pointList.list[0].y,pointList.list[0].color),
+                                       new Point2d(pointList.list[1].x,pointList.list[1].y,pointList.list[1].color),
+                                       new Point2d(pointList.list[2].x,pointList.list[2].y,pointList.list[2].color),color,interpolation));
+          return; 
+        }
+        else{
+          return;
+        }
       }
+
       // clip ear
       for (i=0;i<pointList.size;i++){
         clip = true;
@@ -348,7 +360,6 @@ class WebGLPolygon extends Polygon{
       return !(has_neg && has_pos);
     }
 
-    is
 
 }
 

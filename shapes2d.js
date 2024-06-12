@@ -256,7 +256,7 @@
         }
     }
 
-
+    //Trabalho-Item-5
     class Polygon extends Shape2d{
         constructor(color,interpolation){
             super(color);

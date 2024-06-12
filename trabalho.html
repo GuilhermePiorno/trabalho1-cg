@@ -143,7 +143,7 @@
         this.triangleModel = triangle.getWebGLModel();
 
 
-        //Cria um triangulo e obtem um modelo WebGL (Trabalho-Item-5) Animação
+        //Cria um triangulo e obtem um modelo WebGL (Trabalho-Item-6) Animação
         const triangle2 = new WebGLTriangle(this.gl, this.program, 
                                            new Point2d(-0.3,-0.2,c0),
                                            new Point2d(-0.2,-0.4,c1),
@@ -299,8 +299,9 @@
 
         // Rotação anti-horária em 10 graus e translação para direita de 0.2 de uma elipse. (Trabalho-Item-4)
         this.setProgramUniformShaderVariablesValues(this.program,uniformShaderVariablesValues6);
-        this.ellipseModel2.draw();       // Trabalho-Item-3
-
+        this.ellipseModel2.draw();       // Trabalho-Item-4
+        
+        // Trabalho-Item-6
         this.setProgramUniformShaderVariablesValues(this.program,uniformShaderVariablesValues7);
         this.triangleModel2.draw();
 
